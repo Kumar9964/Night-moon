@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Moon - Admin Panel</title>
+    <style>
+        :root {
+            --primary-color: #3498db; --background-color: #f4f4f9;
+            --head-color: #e74c3c; --tail-color: #2ecc71; --primary-text: #333;
+            --warning-color: #f1c40f;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 20px;
+            background-color: var(--background-color); color: var(--primary-text);
+        }
+        .admin-header {
+            background-color: #2c3e50; color: white;
+            padding: 15px 30px; text-align: center;
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .admin-container {
+            max-width: 800px; margin: 0 auto;
+            background: white; padding: 25px;
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .admin-card { padding: 20px; border-radius: 8px; }
+        .admin-card h2 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .admin-card select, .admin-card button {
+            width: 100%; padding: 12px;
+            font-size: 16px; border-radius: 6px;
+            margin-bottom: 10px; box-sizing: border-box;
+            font-family: inherit;
+        }
+        .admin-card select { border: 1px solid #ccc; }
+        .admin-card button { border: none; color: white; cursor: pointer; transition: opacity 0.2s; font-weight: 500; }
+        .admin-card button:hover { opacity: 0.9; }
+        .btn-force { background-color: var(--warning-color); color: var(--primary-text); }
+        .btn-random { background-color: var(--tail-color); }
+        #admin-status-message {
+            margin-top: 15px; font-weight: bold;
+            font-size: 18px; text-align: center;
+            padding: 15px; border-radius: 5px;
+        }
+        .status-forced { background-color: #fdd; color: var(--head-color); }
+        .status-random { background-color: #dfd; color: var(--tail-color); }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header"><h1>Night Moon - Admin Panel</h1></header>
+        <div class="admin-card">
+            <h2>Game Control</h2>
+            <p>Select a result and click the button. The very next game round will show this result for all users.</p>
+            <select id="next-result-select">
+                <option value="Head">Head</option>
+                <option value="Tail">Tail</option>
+            </select>
+            <button id="set-result-btn" class="btn-force">Force This Result</button>
+            <button id="set-random-btn" class="btn-random">Make Next Result Random</button>
+            <p id="admin-status-message"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const setResultBtn = document.getElementById('set-result-btn');
+            const setRandomBtn = document.getElementById('set-random-btn');
+            const nextResultSelect = document.getElementById('next-result-select');
+            const statusMessage = document.getElementById('admin-status-message');
+
+            function checkAdminStatus() {
+                const forcedResult = localStorage.getItem('forcedResult');
+                if (forcedResult) {
+                    statusMessage.textContent = `STATUS: The next result is FORCED to be ${forcedResult}.`;
+                    statusMessage.className = 'status-forced';
+                } else {
+                    statusMessage.textContent = 'STATUS: The next result is RANDOM.';
+                    statusMessage.className = 'status-random';
+                }
+            }
+
+            setResultBtn.addEventListener('click', () => {
+                const resultToForce = nextResultSelect.value;
+                localStorage.setItem('forcedResult', resultToForce);
+                alert(`Success! The next game result is now forced to be ${resultToForce}.`);
+                checkAdminStatus();
+            });
+
+            setRandomBtn.addEventListener('click', () => {
+                localStorage.removeItem('forcedResult');
+                alert(`Success! The next game result will be random.`);
+                checkAdminStatus();
+            });
+
+            checkAdminStatus();
+            setInterval(checkAdminStatus, 2000);
+        });
+    </script>
+</body>
+</html>
